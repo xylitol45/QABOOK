@@ -112,10 +112,21 @@
         };
     }])
     .controller('topCtrl',['shared','$http', function(shared,$http){
-        var _this=this;
+        var _this=this, 
+            _books=[
+            ];
+        for(var i=0;i<20;i++) {
+            _books.push("book"+i);
+        }
+        _this.getBooks = function() {
+            return _books;    
+        },
+        _this.onBook = function(i) {
+            console.log(_books[i]);    
+        },
         _this.goQuestion = function(){
             app.navi.pushPage('question.html');  
-        };
+        },
         _this.start = function(){
             shared.loadQuestion()
             .then(function(){
