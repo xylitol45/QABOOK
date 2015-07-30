@@ -1,0 +1,440 @@
+<!DOCTYPE HTML>
+<html ng-app="myApp">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <script src="components/loader.js"></script>
+  <link rel="stylesheet" href="components/loader.css">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/angular-sanitize.min.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+
+  </script>
+  <style>
+    .item {
+      padding: 10px;
+      line-height: 1;
+    }
+    .item-thum {
+      background-color: #ccc;
+      width: 50px;
+      height: 50px;
+      border-radius: 4px;
+    }
+    .item-title {
+      font-size: 15px;
+      font-weight: 500;
+    }
+    .item-desc {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.3;
+      margin: 4px 0 0 0;
+      padding: 0 30px 0 0;
+    }
+    .item-label {
+      font-size: 12px;
+      color: #999;
+      float: right;
+    }
+  </style>
+</head>
+
+
+<body>    
+
+    <ons-navigator page="top.html" var="app.navi"></ons-navigator>
+  
+    <ons-template id="top.html">
+    <div style="padding:10px" ng-controller="topCtrl as ctrl">
+        <ons-toolbar>
+            <div class="center">QA</div>
+        </ons-toolbar>
+        <ons-button modifier="large" style="" ng-click="ctrl.start()">
+          Start
+        </ons-button>
+
+    </div>
+    </ons-template>
+    
+    <ons-template id="question.html">
+    <div style="padding:10px" ng-controller="questionCtrl as ctrl">
+        <ons-toolbar>
+            <div class="center">第{{ctrl.index+1}}問</div>
+            <div class="right">
+            <ons-toolbar-button ng-click="ctrl.show('question_menu_dialog.html')">
+            <ons-icon icon="ion-navicon" style="font-size: 32px; width: 1em">
+            </ons-toolbar-button>                          
+            </div>
+        </ons-toolbar>
+
+        <div ng-bind-html="ctrl.q"></div>
+        
+        <ons-bottom-toolbar>
+        <div class="bottom-bar__line-height">    
+        <ons-row>
+        <ons-col width="9px"></ons-col>
+        <ons-col>
+        <div class="button-bar" style="width:100%;margin:0 auto;">
+        <div class="button-bar__item">
+            <button class="button-bar__button" ng-click="ctrl.goAnswer(1)">ア</button>
+        </div>
+        <div class="button-bar__item">
+            <button class="button-bar__button" ng-click="ctrl.goAnswer(2)">イ</button>
+        </div>
+        <div class="button-bar__item">
+            <button class="button-bar__button" ng-click="ctrl.goAnswer(3)">ウ</button>
+        </div>
+        <div class="button-bar__item">
+            <button class="button-bar__button" ng-click="ctrl.goAnswer(4)">エ</button>
+        </div>
+        </div>
+        </ons-col>
+        <ons-col width="9px"></ons-col>
+        <ons-col width="50px">
+            <ons-button class="button--quiet" ng-click="ctrl.goPass()">パス</ons-button>        
+        </ons-col>
+        <ons-col width="9px"></ons-col>
+        </ons-row>
+    </div>    
+    </ons-bottom-toolbar>
+    </div>
+    </ons-template>
+    
+    <ons-template id="answer_dialog.html">
+    <ons-dialog var="app.answerDialog" cancelable ng-controller="answerDialogCtrl as ctrl">
+        <ons-toolbar inline>
+            <div class="center">
+            結果
+            </div>
+        </ons-toolbar>    
+        <div style="padding:10px">
+        <p ng-if="ctrl.isCorrect==true">
+            正解です。
+        </p>    
+        <p ng-if="ctrl.isCorrect==false">
+            不正解です。
+        </p>    
+        <p>
+            <ons-button modifier="large" ng-click="app.answerDialog.hide()">次へ</ons-button>
+        </p>
+        </div>
+    </ons-dialog>
+    </ons-template>
+
+    <ons-template id="question_menu_dialog.html">
+    <ons-dialog var="app.questionMenuDialog" cancelable ng-controller="questionMenuDialogCtrl as ctrl">
+        <ons-toolbar inline>
+            <div class="center">
+            メニュー
+            </div>
+        </ons-toolbar>    
+        <div style="padding:10px">
+        <p>
+            <ons-button modifier="large" ng-click="ctrl.goFinish()">次へ</ons-button>
+        </p>
+        </div>
+    </ons-dialog>
+    </ons-template>
+
+    <ons-template id="result.html">
+    <div style="padding:10px" ng-controller="resultCtrl as ctrl">
+        <ons-toolbar>
+            <div class="center">結果</div>
+            <div class="right">
+            <ons-toolbar-button ng-click="ctrl.show('login.html')">
+            <ons-icon icon="ion-navicon" style="font-size: 32px; width: 1em">
+            </ons-toolbar-button>                          
+            </div>
+        </ons-toolbar>
+        <div>全{{ctrl.total}}問中、{{ctrl.correctTotal}}問正解です。</div>
+        <br>
+        <ons-button modifier="large" style="" ng-click="ctrl.goTop()">
+          GO TOP
+        </ons-button>        
+    </div>
+    </ons-template>
+
+    <ons-template id="login.html">
+    <ons-dialog var="dialog" cancelable ng-controller="dialogCtrl as ctrl">
+      <ons-toolbar inline>
+        <div class="center">
+          Login
+        </div>
+      </ons-toolbar>    
+      <div style="padding:10px">
+      <p>
+        <input placeholder="Username" id="username" class="text-input" style="width:100%" value="{{ctrl.username}}">
+      </p>    
+      <p>
+        <input type="password" placeholder="Password" id="username" class="text-input" style="width:100%">
+      </p>    
+      <p>
+        <ons-button modifier="large" ng-click="dialog.hide()">Sign in</ons-button>
+      </p>
+      </div>
+    </ons-dialog>
+    </ons-template>
+
+
+<ons-template id="question2.html">
+  <div style="padding:10px" ng-controller="question2Ctrl as ctrl">
+    <ons-toolbar>
+        <div class="center">CENTER</div>
+    </ons-toolbar>
+<!--
+        <textarea class="textarea" rows="3" placeholder="Textarea" style="width:100%;background:#fff;">
+        {{ctrl.loadMsg}}    
+        </textarea>
+-->
+    <div ng-bind-html="ctrl.question"></div>
+    <ons-button>A</ons-button>
+    <ons-button>A</ons-button>
+
+       <ons-list modifier="inset" class="settings-list">
+        <ons-list-item>
+          Sign out
+          <br>
+          ddd
+        </ons-list-item>
+      </ons-list>
+<br>
+    <div class="button-bar" style="width:100%;">
+    <div class="button-bar__item">
+    <button class="button-bar__button">One</button>
+  </div>
+  <div class="button-bar__item">
+    <button class="button-bar__button">Two</button>
+  </div>
+  <div class="button-bar__item">
+    <button class="button-bar__button">Three</button>
+  </div>
+  <div class="button-bar__item">
+    <button class="button-bar__button">Three</button>
+  </div>
+    </div>
+    <br>
+        <ons-button modifier="large" style="" ng-click="ctrl.goSecond()">
+          Second
+        </ons-button>
+    <br>
+        <ons-button modifier="large" style="margin: 0 auto;" ng-click="ctrl.load()">
+          Load
+        </ons-button>
+
+<ons-row>
+    <ons-col>Col</ons-col>
+    <ons-col>Col</ons-col>
+    <ons-col>Col</ons-col>
+    <ons-col>Col</ons-col>
+    <ons-col>Col</ons-col>
+  </ons-row>
+
+       <ons-list modifier="inset" class="settings-list">
+        <ons-list-item>{{ctrl.msg}}
+        </ons-list-item>
+      </ons-list>
+
+<ons-list modifier="inset" class="settings-list">
+        <ons-list-item>shared</ons-list-item>
+        <ons-list-item>{{ctrl.shared.question}}
+        </ons-list-item>
+      </ons-list>
+
+<ons-bottom-toolbar>
+    <div class="bottom-bar__line-height">
+    
+  <ons-row>
+    <ons-col width="9px"></ons-col>
+<ons-col>
+<div class="button-bar" style="width:100%;margin:0 auto;">
+  <div class="button-bar__item">
+    <button class="button-bar__button" ng-click="ctrl.onAnswer(1)">A</button>
+  </div>
+  <div class="button-bar__item">
+    <button class="button-bar__button" ng-click="ctrl.onAnswer(2)">B</button>
+  </div>
+  <div class="button-bar__item">
+    <button class="button-bar__button" ng-click="ctrl.onAnswer(3)">C</button>
+  </div>
+  <div class="button-bar__item">
+    <button class="button-bar__button" ng-click="ctrl.onAnswer(4)">エ</button>
+  </div>
+</div>
+</ons-col>
+<!--
+    <ons-col>
+        <button class="button--quiet">A</button>
+    </ons-col>
+    <ons-col>
+        <button class="button--quiet">B</button>
+    </ons-col>
+    <ons-col>
+        <ons-button>C</ons-button>
+    </ons-col>
+    <ons-col>
+        <ons-button>D</ons-button>
+    </ons-col>
+    -->
+    <ons-col width="9px"></ons-col>
+    <ons-col width="50px">
+        <ons-button class="button--quiet" ng-click="ctrl.goTop()">パス</ons-button>        
+    </ons-col>
+    <ons-col width="9px"></ons-col>
+  </ons-row>
+<!--    <div class="bottom-bar__line-height" style="text-align:center">Bottom Toolbar</div> -->
+
+</div>    
+</ons-bottom-toolbar>
+<!--
+      <div class="bottom-bar">
+      <div class="bottom-bar__line-height" style="text-align:center">Bottom Toolbar</div>
+      </div>
+-->
+    </div>      
+
+</ons-template>
+  
+  <ons-template id="second.html">
+  <div class="cotent-padded" ng-controller="secondCtrl as ctrl">
+    <ons-toolbar>
+        <div class="center">CENTER</div>
+    </ons-toolbar>
+
+<ons-bottom-toolbar>
+    <div class="bottom-bar__line-height">
+    
+  <ons-row>
+    <ons-col width="9px"></ons-col>
+<ons-col style="width:calc(100% - 9px - 50px - 9px - 9px);" >
+</ons-col>
+    <ons-col width="9px"></ons-col>
+    <ons-col width="50px">
+            <ons-button class="button--quiet" ng-click="ctrl.goTop()">パス</ons-button>        
+    </ons-col>
+    <ons-col width="9px"></ons-col>
+  </ons-row>
+
+    </div></ons-bottom-toolbar>
+    
+    
+</div>
+</ons-template>
+  
+  <ons-template id="list.html">
+    <ons-page id="list-page">
+      <ons-toolbar>
+        <div class="center">Master Details</div>
+      </ons-toolbar>
+
+      <ons-list>
+
+        <ons-list-item modifier="chevron" class="item">
+          <ons-row>
+            <ons-col width="60px"> 
+              <div class="item-thum"></div>
+            </ons-col>
+            <ons-col>
+              <header>
+                <span class="item-title">Item Title</span>
+                <span class="item-label">4h</span>
+              </header>
+              <p class="item-desc">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+            </ons-col>
+          </ons-row>                          
+        </ons-list-item>
+
+        <ons-list-item modifier="chevron" class="item">
+          <ons-row>
+            <ons-col width="60px"> 
+              <div class="item-thum"></div>
+            </ons-col>
+            <ons-col>
+              <header>
+                <span class="item-title">Another Item Title</span>
+                <span class="item-label">6h</span>
+              </header>
+              <p class="item-desc">Ut enim ad minim veniam.</p>
+            </ons-col>
+          </ons-row>                          
+        </ons-list-item>
+
+        <ons-list-item modifier="chevron" class="item">
+          <ons-row>
+            <ons-col width="60px"> 
+              <div class="item-thum"></div>
+            </ons-col>
+            <ons-col>
+              <header>
+                <span class="item-title">Yet Another Item Title</span>
+                <span class="item-label">1day ago</span>
+              </header>
+              <p class="item-desc">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+            </ons-col>
+          </ons-row>                          
+        </ons-list-item>
+      </ons-list>
+    </ons-page>
+  </ons-template>
+
+  <ons-template id="detail.html">
+    <ons-page id="detail-page">
+
+      <ons-toolbar>
+        <div class="left"><ons-back-button>Back</ons-back-button></div>
+        <div class="center">Details</div>
+      </ons-toolbar>
+
+      <ons-list modifier="inset" style="margin-top: 10px">
+        <ons-list-item class="item">
+          <ons-row>
+            <ons-col width="60px"> 
+              <div class="item-thum"></div>
+            </ons-col>
+            <ons-col>
+              <header>
+                <span class="item-title">Title</span>
+                <span class="item-label">Foobar</span>
+              </header>
+              <p class="item-desc">desc</p>
+            </ons-col>
+          </ons-row>
+        </ons-list-item>
+
+        <ons-list-item modifier="chevron" id="add-note-action" class="add-note-action-item">
+          <ons-icon icon="ion-chatboxes" fixed-width="true" style="color: #ccc"></ons-icon>
+          Add a note
+        </ons-list-item>
+      </ons-list>
+
+      <ons-list style="margin-top: 10px">
+        <ons-list-item class="item">
+          <header>
+            <span class="item-title">Lorem ipsum dolor sit amet</span>
+          </header>
+          <p class="item-desc">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        </ons-list-item>
+        <ons-list-item class="item">
+          <header>
+            <span class="item-title">Lorem ipsum dolor sit amet</span>
+          </header>
+          <p class="item-desc">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        </ons-list-item>
+        <ons-list-item class="item">
+          <header>
+            <span class="item-title">Lorem ipsum dolor sit amet</span>
+          </header>
+          <p class="item-desc">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        </ons-list-item>
+      </ons-list>
+
+      <br>
+
+    </ons-page>
+  </ons-template>
+
+</body>
+
+</html>
+
