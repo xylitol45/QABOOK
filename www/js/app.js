@@ -1,40 +1,8 @@
 (function(){
-  'use strict';
-  
-  // StatusBar plugin
-  //  StatusBar.hide();
-  
-  var currentItem = {};
+    'use strict';
 
-  $(document).on('pageinit', '#detail-page', function() {
-    $('.item-title', this).text(currentItem.title);
-    $('.item-desc', this).text(currentItem.desc);
-    $('.item-label', this).text(currentItem.label);
-    $('.add-note-action-item', this).click(function () {
-        alert('dummy message');
-    });
-  });
-
-  $(document).on('pageinit', '#list-page', function() {
-    $('.item', this).on('click', function() {
-      currentItem = {
-        title : $('.item-title', this).text(),
-        desc : $('.item-desc', this).text(),
-        label : $('.item-label', this).text()
-      };
-
-      app.navi.pushPage('detail.html');
-    });
-  });
-
-var _n = 0, _n2=0;
-
-_n=1, _n2=1;
-
-
-
-  ons.bootstrap("myApp",['onsen','ngSanitize'])
-  .factory('shared',['$http','$q',function($http,$q){    
+    ons.bootstrap("myApp",['onsen','ngSanitize'])
+    .factory('shared',['$http','$q',function($http,$q){    
         var _dfd, 
             _questionIndex, 
             _answer=0, 
@@ -217,112 +185,10 @@ _n=1, _n2=1;
             app.navi.replacePage('top.html');    
         };
     }])
-  .controller('dialogCtrl', ['shared', function(shared){
+    .controller('dialogCtrl', ['shared', function(shared){
         var _this=this;
         _this.username = (new Date()).getTime();
-  }])
-  .controller('question2Ctrl',['shared','$http', function(shared,$http){
-      _n++;
-    console.log('a'+_n);
-      
-      
-      var _this=this, _url='http://f-spring.prv11.srp-tech.net/uAhd43rt/20150726/sample.txt';
-      _this.shared = shared;
-      _this.msg = _this.shared.question;
-      _this.loadMsg = "abc";
-        _this.question = "";      
-      _this.onAnswer = function(no){
-          _this.msg = no;
-      };
-      _this.goSecond = function(){
-        // ページスタックにない場合、コンストラクトは再度呼ばれる
-        //app.navi.replacePage('second.html');  
-        
-        app.navi.pushPage('second.html');  
-      };
-      _this.load = function(){
-          console.log('load');
-          // jsonに変換しようとするので、transformResponseを上書きする
-        $http.get(_url,{
-            params:{"t":(new Date()).getTime()},
-            transformResponse:function(data){return data;}
-        })
-        .then(function(res){
-           console.log(res.data); 
-           
-           _this.question = res.data;
-        });
-    //     $http({method:'GET',url:_url,
-    //         params:{"t":(new Date()).getTime()},
-    //         transformResponse:function(data){return data;}
-    //     })
-    //     .success(function(data,status,headers,config){
-    // console.log('success'+data);    
-    //     })
-    //     .error(function(data,status,headers,config){
-    // console.log('error'+status); 
-    //     });
-
-      };
-      _this.onSample = function(){
-// camera
-//function onSuccess(imageData) {
-//}
-//function onFail(message) {
-//    alert('Failed because: ' + message);
-//}
-//navigator.camera.getPicture(onSuccess, onFail, { quality: 50,
-//    destinationType: Camera.DestinationType.DATA_URL
-//});
-
-//navigator.notification.vibrate();
-
-            // $http({
-            //     method : 'GET',
-            //     url : 'sample.txt'
-            // }).success(function(data, status, headers, config) {
-            //     _this.msg = data.data;
-            //     console.log(status);
-            //     console.log(data);
-            // }).error(function(data, status, headers, config) {
-            //     console.log(status);
-            // });
-
-// jsonに変換しようとするので、transformResponseを上書きする
-$http.get('sample.txt',{
-    transformResponse:function(data){return data;}
-}).then(function(response){
-     // return csvParser(response.data);
-console.log(response.data);
-_this.msg = response.data;
-});
-  
-// $http({method:'GET',url:'sample.txt'})
-// .success(function(data,status,headers,config){
-//    console.log('success'+data);    
-// })
-// .error(function(data,status,headers,config){
-//    console.log('error'+status); 
-// });
-
-//_this.msg = $http.get('sample.txt');
-        // ページスタックにない場合、コンストラクトは再度呼ばれる
-        //app.navi.replacePage('second.html');  
-        
-        //app.navi.pushPage('second.html');  
-      };
-  }])
-  .controller('secondCtrl',['shared',function(shared){
-      _n2++;
-      console.log('second:'+_n2);
-      var _this=this;
-      _this.shared = shared;
-      _this.goTop=function(){
-        _this.shared.question = 'next';
-        //app.navi.replacePage('top.html'); 
-        app.navi.popPage();
-      };
-  }]);
+    }]);
 
 })();
 
