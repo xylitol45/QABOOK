@@ -111,18 +111,39 @@
             }
         };
     }])
-    .controller('topCtrl',['shared','$http', function(shared,$http){
+    .controller('topCtrl',['shared','$http', '$scope',function(shared,$http,$scope){
         var _this=this, 
             _books=[
             ];
         for(var i=0;i<20;i++) {
             _books.push("book"+i);
         }
+        
         _this.getBooks = function() {
             return _books;    
         },
         _this.onBook = function(i) {
             console.log(_books[i]);    
+        },
+        _this.onDeleteBook = function(i,e){
+            e.stopPropagation();
+            ons.notification.confirm({
+                message: 'このコースを削除しますか？',
+                // もしくは messageHTML: '<div>HTML形式のメッセージ</div>',
+                title: '',
+                buttonLabels: ['はい', 'いいえ'],
+                animation: 'default', // もしくは'none'
+                primaryButtonIndex: 1,
+                cancelable: true,
+                callback: function(index) {
+                // -1: キャンセルされた
+                // 0-: 左から0ではじまるボタン番号
+                    if (index == 0) {
+                        _books.splice(i,1);
+                        $scope.$apply();
+                    }
+                }
+            });            
         },
         _this.goQuestion = function(){
             app.navi.pushPage('question.html');  
@@ -169,7 +190,29 @@
                 app.navi.replacePage('result.html');                
             };
         },
+        _this.onExit = function(){
+            ons.notification.confirm({
+                message: 'このコースを終了してもいいですか？',
+                // もしくは messageHTML: '<div>HTML形式のメッセージ</div>',
+                title: '',
+                buttonLabels: ['はい', 'いいえ'],
+                animation: 'default', // もしくは'none'
+                primaryButtonIndex: 1,
+                cancelable: true,
+                callback: function(index) {
+                // -1: キャンセルされた
+                // 0-: 左から0ではじまるボタン番号
+                    console.log(index);
+                    if (index == 0) {
+                        app.navi.replacePage('result.html');
+                    }
+                }
+            });            
+        },
         _this.show = function(dlg) {
+            
+            console.log(dlg);
+            
             ons.createDialog(dlg).then(function(dialog) {
                 dialog.show();
             });
@@ -202,5 +245,4 @@
     }]);
 
 })();
-
 
