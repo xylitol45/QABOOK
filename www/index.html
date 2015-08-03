@@ -32,14 +32,18 @@
         </ons-button>
         <ons-list>
             <ons-list-item class="list__item--tappable list__item__line-height" 
-                ng-init="" ng-repeat="book in ctrl.getBooks()" ng-click="ctrl.onBook($index)">
-                {{book}}
+                ng-init="" ng-repeat="book in ctrl.getBooks()">
+            <ons-row>            
+                <ons-col ng-click="ctrl.onBook($index)"><span class="list-text">{{book}}</span></ons-col>
+                <ons-col width="25px" ng-click="ctrl.onDeleteBook($index,$event)">
+                    <span >
+                    <ons-icon icon="ion-trash-b"></ons-icon>
+                    </span>
+                </ons-col>
+            </ons-row>    
             </ons-list-item>
             <ons-list-item class="list__item--tappable list__item__line-height" modifier="chevron">One</ons-list-item>
         </ons-list> 
-
-        
-
     </div>
     </ons-template>
     
@@ -48,8 +52,8 @@
         <ons-toolbar>
             <div class="center">第{{ctrl.index+1}}問</div>
             <div class="right">
-            <ons-toolbar-button ng-click="ctrl.show('question_menu_dialog.html')">
-            <ons-icon icon="ion-navicon" style="font-size: 32px; width: 1em">
+            <ons-toolbar-button ng-click="ctrl.onExit()">
+            <span>終了</span>
             </ons-toolbar-button>                          
             </div>
         </ons-toolbar>
@@ -108,10 +112,23 @@
     </ons-dialog>
     </ons-template>
 
-    <ons-template id="question_menu_dialog.html">
 
+<!--
+    <ons-template id="question_menu_dialog.html">
     <ons-dialog var="app.questionMenuDialog" cancelable ng-controller="questionMenuDialogCtrl as ctrl">
-        <ons-toolbar inline>
+    <div class="alert-dialog-mask"></div>
+    <div class="alert-dialog">
+      <div class="alert-dialog-content">
+        Hello World!
+      </div>
+    
+      <div class="alert-dialog-footer">
+        <button class="alert-dialog-button">Cancel</button>
+        <button class="alert-dialog-button alert-dialog-button--primal">OK</button>
+      </div>
+    </div>
+
+<ons-toolbar inline>
             <div class="center">
             メニュー
             </div>
@@ -121,18 +138,21 @@
             <ons-button modifier="large" ng-click="ctrl.goFinish()">次へ</ons-button>
         </p>
         </div>
-    </ons-dialog>
+</ons-dialog>
     </ons-template>
+-->
 
     <ons-template id="result.html">
     <div style="padding:10px" ng-controller="resultCtrl as ctrl">
         <ons-toolbar>
             <div class="center">結果</div>
+<!--
             <div class="right">
             <ons-toolbar-button ng-click="ctrl.show('login.html')">
             <ons-icon icon="ion-navicon" style="font-size: 32px; width: 1em">
             </ons-toolbar-button>                          
             </div>
+-->
         </ons-toolbar>
         <div>全{{ctrl.total}}問中、{{ctrl.correctTotal}}問正解です。</div>
         <br>
@@ -423,4 +443,3 @@
 </body>
 
 </html>
-
