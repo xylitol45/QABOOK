@@ -10,6 +10,7 @@
             _total=0,
             _correctTotal=0, 
             _questions=[],
+            _title = '',
             _dlgs=[],
             _init = function(){
                 _dfd = $q.defer(),
@@ -35,30 +36,37 @@
         return {
             init:_init,
             dlgs:_dlgs,
+            choices:['1','2','3','4'],
             loadQuestion:function(){
                 _init();
-                var _url ='sample.txt';
+                var _url ='qa.txt';
                  $http.get(_url,{
                      params:{"t":(new Date()).getTime()},
                      transformResponse:function(data){return data;}
                  })
                  .then(
                      function(res){                         
-                         var _a=0, _buf='',_lines = (res.data || '').split(/\n/);
-                         for (var i=0,len=_lines.length;i<len;i++) {
-                             var _row=_lines[i];
-                             if (_row.match(/^\*/)){
-                                if (_a > 0){
-                                    _questions.push({a: _a, q: _buf});
-                                }                                    
-                                _a = 0;
-                                _buf = '';
-                                if (_row.match(/a\s*=\s*(\d+)/i)) {
-                                    _a = RegExp.$1 || 1;
-                                }
-                             } else {
+                        var _a=0,_title='', 
+                            _buf='',
+                            _lines = (res.data || '').split(/\n/),
+                            _len = _lines.length,
+                            _i = 0;
+                        for (var i=0,len=_lines.length;i<len;i++) {
+                            var _row=_lines[i];
+                            if (!_row.match(/^\*/)){
                                  _buf += _row+"\n";
-                             }
+                                 continue;
+                            }        
+                            if (_a > 0){
+                                _questions.push({a: _a, q: _buf});
+                            }                                    
+                            _a = 0,_buf = '';
+                            if (_row.match(/title\s*=\s*([^\s]+)/i)) {
+                                _title = RegExp.$1 || '';
+                            }
+                            if (_row.match(/a\s*=\s*(\d+)/i)) {
+                                _a = RegExp.$1 || 1;
+                            }
                         }
                         if (_a>0) {
                              _questions.push({a: _a, q: _buf});
@@ -118,7 +126,6 @@
         for(var i=0;i<20;i++) {
             _books.push("book"+i);
         }
-        
         _this.getBooks = function() {
             return _books;    
         },
@@ -145,6 +152,12 @@
                 }
             });            
         },
+        _this.onMenu = function(){
+            var _dlg = 'top_menu_dialog.html';
+            ons.createDialog(_dlg).then(function(dialog) {
+                dialog.show();
+            });
+        },
         _this.goQuestion = function(){
             app.navi.pushPage('question.html');  
         },
@@ -155,10 +168,28 @@
             });
         };
     }])
+    .controller('topMenuDialogCtrl',['shared',function(shared){
+        var _this=this;
+        _this.goRecord=function(){
+            app.topMenuDialog.hide();
+            app.navi.pushPage('record.html');
+        };
+        _this.goLoadBook=function(){
+            app.topMenuDialog.hide();
+            app.navi.pushPage('load_book.html');
+        };
+    }])    
+    .controller('recordCtrl',['shared',function(shared){
+        var _this=this;
+    }])    
+    .controller('loadBookCtrl',['shared',function(shared){
+        var _this=this;
+    }])    
     .controller('questionCtrl',['shared','$http', function(shared,$http){
         var _this=this;
         _this.q = "",
-        _this.que = {};
+        _this.que = {},        
+        _this.choices = shared.choices,
         _this.displayQuestion=function(){
             var _que = shared.getQuestion();
             if (_que) {
