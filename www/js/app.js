@@ -1,5 +1,8 @@
 (function(){
     'use strict';
+    
+    var _n=(+new Date()).toString();
+console.log(_n);
 
     ons.bootstrap("myApp",['onsen','ngSanitize'])
     .factory('shared',['$http','$q',function($http,$q){    
@@ -8,7 +11,8 @@
             _answer=0, 
             _correct=false,
             _total=0,
-            _correctTotal=0, 
+            _correctTotal=0,
+            _books=[],
             _questions=[],
             _title = '',
             _dlgs=[],
@@ -32,21 +36,50 @@
                     arr[j] = temp;
                 }
                 return arr;
+            },
+            _load = function(key){
+                
             };
+            
+            
+
         return {
             init:_init,
             dlgs:_dlgs,
             choices:['1','2','3','4'],
-            loadQuestion:function(){
-                _init();
-                var _url ='qa.txt';
-                 $http.get(_url,{
-                     params:{"t":(new Date()).getTime()},
+            getBooks:function(){
+                return _books
+            },
+            loadBooks:function(){
+                console.log('loadBooks');
+                _books=[];
+                for (var i=0,len=localStorage.length;i<len;i++){
+                    var _key = localStorage.key(i);                        
+                    if (_key.match(/^q_/)) {
+                        try {
+                            _books.push(JSON.parse(localStorage[_key]));
+                        }catch(e){console.log(e);}
+                    }
+                }
+                _books.sort(function(a,b){
+                    if( a['order'] < b['order'] ) return -1;
+                    if( a['order'] > b['order'] ) return 1;
+                    return 0;
+                })
+            },
+            addBook:function(url){
+                console.log('addBook:'+url);
+                url = url || 'qa.txt';
+                var _dfd = $q.defer();
+                $http.get(url,{
+                     params:{"t":(+new Date())},
                      transformResponse:function(data){return data;}
-                 })
+                })
                  .then(
-                     function(res){                         
-                        var _a=0,_title='', 
+                     function(res){                 
+                        var _questions=[],
+                            _n = (+new Date()).toString(),
+                            _a=0,_title=_n, 
                             _buf='',
                             _lines = (res.data || '').split(/\n/),
                             _len = _lines.length,
@@ -71,11 +104,18 @@
                         if (_a>0) {
                              _questions.push({a: _a, q: _buf});
                         }
+                        console.log(_questions.length);
                         if (_questions.length == 0){
-                            _dfd.resolve();
+                            _dfd.reject();
                             return;
                         }
-                        _shuffle(_questions);
+                        localStorage['q_'+_n] = JSON.stringify({
+                            'id':'q_'+_n,
+                            'order':_n,
+                            'url':url,
+                            'title':_title,
+                            'questions':_questions
+                        });
                         _dfd.resolve();
                      },
                      function(){
@@ -83,6 +123,14 @@
                      }
                  );
                  return _dfd.promise;
+            },
+            removeBook:function(index){
+                console.log('removeBook ' + _books[index]['id']);
+                localStorage.removeItem(_books[index]['id']);
+            },
+            startQuestion:function(index){
+                _init();
+                _questions = angular.copy(_books[index]['questions']);
             },
             getQuestion:function(){
                 if (_questions.length == 0 || _questionIndex >= _questions.length) {
@@ -120,17 +168,19 @@
         };
     }])
     .controller('topCtrl',['shared','$http', '$scope',function(shared,$http,$scope){
-        var _this=this, 
-            _books=[
-            ];
-        for(var i=0;i<20;i++) {
-            _books.push("book"+i);
-        }
+        
+        console.log('topCtrl');
+        
+        var _this=this;
+        shared.loadBooks();
+
         _this.getBooks = function() {
-            return _books;    
+            console.log('getBooks');
+            return shared.getBooks();    
         },
         _this.onBook = function(i) {
-            console.log(_books[i]);    
+            shared.startQuestion(i);
+            app.navi.pushPage('question.html');  
         },
         _this.onDeleteBook = function(i,e){
             e.stopPropagation();
@@ -146,7 +196,8 @@
                 // -1: キャンセルされた
                 // 0-: 左から0ではじまるボタン番号
                     if (index == 0) {
-                        _books.splice(i,1);
+                        shared.removeBook(index);
+                        shared.loadBooks();
                         $scope.$apply();
                     }
                 }
@@ -162,10 +213,8 @@
             app.navi.pushPage('question.html');  
         },
         _this.start = function(){
-            shared.loadQuestion()
-            .then(function(){
-                app.navi.pushPage('question.html');
-            });
+            shared.startQuestion();
+            app.navi.pushPage('question.html');            
         };
     }])
     .controller('topMenuDialogCtrl',['shared',function(shared){
@@ -182,8 +231,23 @@
     .controller('recordCtrl',['shared',function(shared){
         var _this=this;
     }])    
-    .controller('loadBookCtrl',['shared',function(shared){
+    .controller('loadBookCtrl',['shared','$scope',function(shared,$scope){
         var _this=this;
+        _this.url='',
+        _this.onLoad=function(){
+            shared.addBook(_this.url).then(
+                function(){
+                    shared.loadBooks();
+                    app.navi.popPage();
+                },
+                function(){
+                    console.log('failed');
+                    ons.notification.alert({
+                        title:'', message: '読み込みに失敗しました',
+                    });
+                }
+            );    
+        };
     }])    
     .controller('questionCtrl',['shared','$http', function(shared,$http){
         var _this=this;
