@@ -27,14 +27,16 @@
             </ons-toolbar-button>                          
             </div>
         </ons-toolbar>
+        <!--
         <ons-button modifier="large" style="" ng-click="ctrl.start()">
           Start
         </ons-button>
+        -->
         <ons-list>
             <ons-list-item class="list__item--tappable list__item__line-height" 
                 ng-init="" ng-repeat="book in ctrl.getBooks()">
             <ons-row>            
-                <ons-col ng-click="ctrl.onBook($index)"><span class="list-text">{{book}}</span></ons-col>
+                <ons-col ng-click="ctrl.onBook($index)"><span class="list-text">{{book.title}}</span></ons-col>
                 <ons-col width="25px" ng-click="ctrl.onDeleteBook($index,$event)">
                     <span >
                     <ons-icon icon="ion-trash-b"></ons-icon>
@@ -42,7 +44,9 @@
                 </ons-col>
             </ons-row>    
             </ons-list-item>
+            <!--
             <ons-list-item class="list__item--tappable list__item__line-height" modifier="chevron">One</ons-list-item>
+            -->
         </ons-list> 
     </div>
     </ons-template>
@@ -71,23 +75,8 @@
             <div class="left"><ons-back-button>Back</ons-back-button></div>    
             <div class="center">成績を見る</div>
         </ons-toolbar>
-        <ons-button modifier="large" style="" ng-click="ctrl.start()">
-          Start
-        </ons-button>
-        <ons-list>
-            <ons-list-item class="list__item--tappable list__item__line-height" 
-                ng-init="" ng-repeat="book in ctrl.getBooks()">
-            <ons-row>            
-                <ons-col ng-click="ctrl.onBook($index)"><span class="list-text">{{book}}</span></ons-col>
-                <ons-col width="25px" ng-click="ctrl.onDeleteBook($index,$event)">
-                    <span >
-                    <ons-icon icon="ion-trash-b"></ons-icon>
-                    </span>
-                </ons-col>
-            </ons-row>    
-            </ons-list-item>
-            <ons-list-item class="list__item--tappable list__item__line-height" modifier="chevron">One</ons-list-item>
-        </ons-list> 
+        <div style="padding:10px">
+        </div>
     </div>
     </ons-template>
     
@@ -97,23 +86,17 @@
             <div class="left"><ons-back-button>Back</ons-back-button></div>    
             <div class="center">問題を読み込む</div>
         </ons-toolbar>
-        <ons-button modifier="large" style="" ng-click="ctrl.start()">
-          Start
+        <div style="padding:10px">
+        <p>
+        <input type="text" class="text-input" style="width:100%" placeholder="URLを入力" ng-model="ctrl.url"/>
+        </p>
+        <p>
+        <ons-button modifier="large" style="" ng-click="ctrl.onLoad()">
+          読み込む
         </ons-button>
-        <ons-list>
-            <ons-list-item class="list__item--tappable list__item__line-height" 
-                ng-init="" ng-repeat="book in ctrl.getBooks()">
-            <ons-row>            
-                <ons-col ng-click="ctrl.onBook($index)"><span class="list-text">{{book}}</span></ons-col>
-                <ons-col width="25px" ng-click="ctrl.onDeleteBook($index,$event)">
-                    <span >
-                    <ons-icon icon="ion-trash-b"></ons-icon>
-                    </span>
-                </ons-col>
-            </ons-row>    
-            </ons-list-item>
-            <ons-list-item class="list__item--tappable list__item__line-height" modifier="chevron">One</ons-list-item>
-        </ons-list> 
+        </p>
+        </div>    
+        </div> 
     </div>
     </ons-template>
     
