@@ -20,23 +20,20 @@
     <ons-template id="top.html">
     <div style="" ng-controller="topCtrl as ctrl">
         <ons-toolbar>
-            <div class="center">QA</div>
+            <div class="center">QABOOK</div>
             <div class="right">
             <ons-toolbar-button ng-click="ctrl.onMenu()">
             <ons-icon icon="ion-navicon" style="font-size: 32px; width: 1em">
             </ons-toolbar-button>                          
             </div>
         </ons-toolbar>
-        <!--
-        <ons-button modifier="large" style="" ng-click="ctrl.start()">
-          Start
-        </ons-button>
-        -->
         <ons-list>
             <ons-list-item class="list__item--tappable list__item__line-height" 
                 ng-init="" ng-repeat="book in ctrl.getBooks()">
             <ons-row>            
-                <ons-col ng-click="ctrl.onBook($index)"><span class="list-text">{{book.title}}</span></ons-col>
+                <ons-col ng-click="ctrl.onBook($index)">
+                    <span class="list-text">{{book.title}}&nbsp;({{book.result.correct}}/{{book.result.total}})</span>                    
+                </ons-col>
                 <ons-col width="25px" ng-click="ctrl.onDeleteBook($index,$event)">
                     <span >
                     <ons-icon icon="ion-trash-b"></ons-icon>
@@ -75,7 +72,23 @@
             <div class="left"><ons-back-button>Back</ons-back-button></div>    
             <div class="center">成績を見る</div>
         </ons-toolbar>
+        <ons-list>
+            <ons-list-item ng-init="" ng-repeat="book in [1,2,3,4]">
+            {{book}}
+            </ons-list-item>
+        </ons-list> 
+
+        <ons-list modifier="inset" style="margin-top: 10px">
+        <ons-list-item>
+          Write a comment
+        </ons-list-item>
+        <ons-list-item>
+          Write a comment
+        </ons-list-item>
+        </ons-list>
         <div style="padding:10px">
+        あいうえお<br />
+        かきくけこ
         </div>
     </div>
     </ons-template>
@@ -168,46 +181,10 @@
     </ons-template>
 
 
-<!--
-    <ons-template id="question_menu_dialog.html">
-    <ons-dialog var="app.questionMenuDialog" cancelable ng-controller="questionMenuDialogCtrl as ctrl">
-    <div class="alert-dialog-mask"></div>
-    <div class="alert-dialog">
-      <div class="alert-dialog-content">
-        Hello World!
-      </div>
-    
-      <div class="alert-dialog-footer">
-        <button class="alert-dialog-button">Cancel</button>
-        <button class="alert-dialog-button alert-dialog-button--primal">OK</button>
-      </div>
-    </div>
-
-<ons-toolbar inline>
-            <div class="center">
-            メニュー
-            </div>
-        </ons-toolbar>
-        <div style="padding:10px">
-        <p>
-            <ons-button modifier="large" ng-click="ctrl.goFinish()">次へ</ons-button>
-        </p>
-        </div>
-</ons-dialog>
-    </ons-template>
--->
-
     <ons-template id="result.html">
     <div style="padding:10px" ng-controller="resultCtrl as ctrl">
         <ons-toolbar>
             <div class="center">結果</div>
-<!--
-            <div class="right">
-            <ons-toolbar-button ng-click="ctrl.show('login.html')">
-            <ons-icon icon="ion-navicon" style="font-size: 32px; width: 1em">
-            </ons-toolbar-button>                          
-            </div>
--->
         </ons-toolbar>
         <div>全{{ctrl.total}}問中、{{ctrl.correctTotal}}問正解です。</div>
         <br>
@@ -216,29 +193,6 @@
         </ons-button>        
     </div>
     </ons-template>
-
-    <ons-template id="login.html">
-    <ons-dialog var="dialog" cancelable ng-controller="dialogCtrl as ctrl">
-      <ons-toolbar inline>
-        <div class="center">
-          Login
-        </div>
-      </ons-toolbar>    
-      <div style="padding:10px">
-      <p>
-        <input placeholder="Username" id="username" class="text-input" style="width:100%" value="{{ctrl.username}}">
-      </p>    
-      <p>
-        <input type="password" placeholder="Password" id="username" class="text-input" style="width:100%">
-      </p>    
-      <p>
-        <ons-button modifier="large" ng-click="dialog.hide()">Sign in</ons-button>
-      </p>
-      </div>
-    </ons-dialog>
-    </ons-template>
-
-  
 
 </body>
 </html>

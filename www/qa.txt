@@ -1,4 +1,4 @@
-* title=これはてすと
+* title=サンプル問題1
 * q a=2
 NETプラットフォームと同様に通常JITコンパイラ方式を採用しているものはどれですか。
 
@@ -39,42 +39,3 @@ HDDに対するSSDのメリットとして適切なものを選びなさい
 3. SQL
 4. SSL
 
-* q a=4
-トランザクションシステムが持つべきACIDの概念要素として不適切なものを選びなさい
-
-1. 原子性
-2. 一貫性
-3. 独立性
-4. 可用性
-
-* q a=1
-KVS(Key-Valueストア）として不適切なものを選びなさい
-
-1. MySQL
-2. JavaScript localStorage
-3. memcached
-4. Google Bigtable
-
-* q a=4
-ブラウザとして不適切なものを選びなさい
-
-1. Opeara
-2. crhome
-3. Safari
-4. Apache Lucene
-
-* q a=2
-JavaScriptととの関連性が最も薄いものを選びなさい。
-
-1. ECMAScript
-2. JUnit
-3. React
-4. jQuery
-
-* q a=1
-「Singleton(シングルトン)は～の１つである」最も適切なものを選びなさい。
-
-1. GoFデザインパターン
-2. アンチパターン
-3. UML
-4. UMA
