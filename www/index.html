@@ -32,7 +32,7 @@
                 ng-init="" ng-repeat="book in ctrl.getBooks()">
             <ons-row>            
                 <ons-col ng-click="ctrl.onBook($index)">
-                    <span class="list-text">{{book.title}}&nbsp;({{book.result.correct}}/{{book.result.total}})</span>                    
+                    <span class="list-text">{{book.title}}&nbsp;({{book.result.correctTotal}}/{{book.result.total}})</span>                    
                 </ons-col>
                 <ons-col width="25px" ng-click="ctrl.onDeleteBook($index,$event)">
                     <span >
@@ -41,9 +41,6 @@
                 </ons-col>
             </ons-row>    
             </ons-list-item>
-            <!--
-            <ons-list-item class="list__item--tappable list__item__line-height" modifier="chevron">One</ons-list-item>
-            -->
         </ons-list> 
     </div>
     </ons-template>
@@ -108,6 +105,9 @@
           読み込む
         </ons-button>
         </p>
+        <p>
+        既に読み込み済みのURLの場合、上書きします。
+        </p>
         </div>    
         </div> 
     </div>
@@ -135,17 +135,6 @@
         <div class="button-bar__item" ng-repeat="choice in ctrl.choices">
             <button class="button-bar__button" ng-click="ctrl.goAnswer($index+1)">{{choice}}</button>
         </div>
-        <!--
-        <div class="button-bar__item">
-            <button class="button-bar__button" ng-click="ctrl.goAnswer(2)">イ</button>
-        </div>
-        <div class="button-bar__item">
-            <button class="button-bar__button" ng-click="ctrl.goAnswer(3)">ウ</button>
-        </div>
-        <div class="button-bar__item">
-            <button class="button-bar__button" ng-click="ctrl.goAnswer(4)">エ</button>
-        </div>
-        -->
         </div>
         </ons-col>
         <ons-col width="9px"></ons-col>

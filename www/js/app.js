@@ -5,68 +5,45 @@
 
     ons.bootstrap("myApp",['onsen','ngSanitize'])
     .factory('shared',['$http','$q',function($http,$q){    
-        var _dfd, 
-            _questionIndex, 
-            _answer=0, 
-            _correct=false,
-            _total=0,
-            _correctTotal=0,
-            _books=[],
-            _book={},
-            _questions=[],
-            _title = '',
-            _dlgs=[],
-            _init = function(){
-                _dfd = $q.defer(),
-                _questionIndex=_answer=_total=_correctTotal=0,
-                _correct=false,
-                _questions=[];
-            },
-            _shuffle = function(arr){
-                var i, j, temp;
-                arr = arr.slice();
-                i = arr.length;
-                if (i === 0) {
-                    return arr;
-                }
-                while (--i) {
-                    j = Math.floor(Math.random() * (i + 1));
-                    temp = arr[i];
-                    arr[i] = arr[j];
-                    arr[j] = temp;
-                }
-                return arr;
-            },
-            _load = function(key){
-                
-            },
-            _o = {
-                init:_init,
-                dlgs:_dlgs,
+        var _o = {
+                questionIndex: 0,
+                answer: 0,
+                correct: false,
+                total: 0,
+                correctTotal: 0,
+                books: [],
+                questions: [],
+                nowBook: {},                
                 choices:['1','2','3','4'],
-                getBooks:function(){
-
-                    return _books
+                init: function(){
+                    _o.questionIndex = _o.answer = _o.total = _o.correctTotal = 0,
+                    _o.correct = false,
+                    _o.nowBook={},
+                    _o.questions = [];
+                },
+                getBooks: function () {
+                    return _o.books
                 },
                 loadBooks:function(){
-                    console.log('loadBooks');
-                    _books=[];
+//                    console.log('loadBooks');
+                    _o.books = [];
                     for (var i=0,len=localStorage.length;i<len;i++){
                         var _key = localStorage.key(i);                        
                         if (_key.match(/^q_/)) {
                             try {
-                                _books.push(JSON.parse(localStorage[_key]));
+                                _o.books.push(JSON.parse(localStorage[_key]));
                             }catch(e){console.log(e);}
                         }
                     }
-                    _books.sort(function(a,b){
+                    _o.books.sort(function (a, b) {
                         if( a['order'] < b['order'] ) return -1;
                         if( a['order'] > b['order'] ) return 1;
                         return 0;
                     })
+                    console.log(_o.books);
                 },
                 addBook:function(url){
-                    console.log('addBook:'+url);
+//                    console.log('addBook:'+url);
                     url = url || 'qa.txt';
                     var _dfd = $q.defer();
                     $http.get(url,{
@@ -107,6 +84,17 @@
                                 _dfd.reject();
                                 return;
                             }
+                            // URLが重複する場合、削除
+                            (function(){
+                                _o.loadBooks();
+                                for (var i=0,len=_o.books.length;i<len;i++){
+                                    if (url == _o.books[i]['url']) {
+                                        localStorage.removeItem(_o.books[i]['id']);
+                                        break;
+                                    }
+                                }
+                            })();
+                            // 追加                            
                             localStorage['q_'+_n] = JSON.stringify({
                                 'id':'q_'+_n,
                                 'url':url,
@@ -115,7 +103,7 @@
                                 'questions':_questions,
                                 'result':{
                                     'total':_questions.length,
-                                    'correct':0
+                                    'correctTotal':0
                                 }
                             });
                             _dfd.resolve();
@@ -127,67 +115,83 @@
                      return _dfd.promise;
                 },
                 removeBook:function(index){
-                    console.log('removeBook ' + _books[index]['id']);
-                    localStorage.removeItem(_books[index]['id']);
+                    console.log('removeBook ' + _o.books[index]['id']);
+                    localStorage.removeItem(_o.books[index]['id']);
                 },
                 startQuestion:function(index){
-                    _init();
-                    _book = angular.copy(_books[index]);
-                    _questions = angular.copy(_books[index]['questions']);
+                    _o.init();
+                    _o.nowBook = angular.copy(_o.books[index]);
+                    _o.questions = angular.copy(_o.nowBook['questions']);
                 },
                 getQuestion:function(){
-                    if (_questions.length == 0 || _questionIndex >= _questions.length) {
+                    if (_o.questions.length == 0 || _o.questionIndex >= _o.questions.length) {
                         return {};
                     }
-                    var _que = _questions[_questionIndex];
-                    _que.index = _questionIndex;
+                    var _que = _o.questions[_o.questionIndex];
+                    _que.index = _o.questionIndex;
                     return _que;
                 },
                 setAnswer:function(answer){
-                    _answer = answer;
-                    _correct = false;
-                    if (_answer > 0 && _questions[_questionIndex].a == _answer) {
-                        _correct = true;
-                        _correctTotal++;
+                    _o.answer = answer;
+                    _o.correct = false;
+                    if (_o.answer > 0 && _o.questions[_o.questionIndex].a == _o.answer) {
+                        _o.correct = true;
+                        _o.correctTotal++;
                     }
                     return;
                 },
                 isCorrect:function(){
-                    return _correct;
+                    return _o.correct;
                 },
                 nextQuestion:function(){
-                    _questionIndex++;
-                    
+                    _o.questionIndex++;                    
                     _o.updateBookResult({
-                       total: _questionIndex,
-                       correct: _correctTotal
+                       total: _o.questionIndex,
+                       correctTotal: _o.correctTotal
                     });
                     
-                    if (_questionIndex >= _questions.length) {
+                    if (_o.questionIndex >= _o.questions.length) {
                         return false;
                     }
                     return true;  
                 },
                 getCorrectTotal:function(){
-                    return _correctTotal;
+//console.log(_o);                    
+                    return _o.correctTotal;
                 },
                 getQuestionIndex:function(){
-                    return _questionIndex;
+                    return _o.questionIndex;
                 },
                 updateBookResult:function(result){
                     
                     console.log('updateBookResult:' + JSON.stringify(result));
                     
-                    var _id = _book['id'];
+                    var _id = _o.nowBook['id'];
                     if (_id && localStorage[_id]) {
+//console.log("_id:"+_id)                        ;
                         try {
                             var _data = JSON.parse(localStorage[_id]);
                             _data['result'] = result;
-                            localStorage[_id] = JSON.stringfy(_data);
+                            localStorage[_id] = JSON.stringify(_data);
                         } catch(e) {
-                            console.log(e);
+                            console.log("error:"+e);
                         }
                     }
+                },
+                shuffle:function(arr){
+                    var i, j, temp;
+                    arr = arr.slice();
+                    i = arr.length;
+                    if (i === 0) {
+                        return arr;
+                    }
+                    while (--i) {
+                        j = Math.floor(Math.random() * (i + 1));
+                        temp = arr[i];
+                        arr[i] = arr[j];
+                        arr[j] = temp;
+                    }
+                    return arr;
                 }
             };
         return _o;            
@@ -303,7 +307,6 @@
             _this.next();    
         },
         _this.next = function(){
-            console.log('next:' + shared.getQuestionIndex());
             if (shared.nextQuestion()){
                 _this.displayQuestion();
             } else {
@@ -330,9 +333,6 @@
             });            
         },
         _this.show = function(dlg) {
-            
-            console.log(dlg);
-            
             ons.createDialog(dlg).then(function(dialog) {
                 dialog.show();
             });
@@ -358,10 +358,6 @@
         _this.goTop = function(){
             app.navi.replacePage('top.html');    
         };
-    }])
-    .controller('dialogCtrl', ['shared', function(shared){
-        var _this=this;
-        _this.username = (new Date()).getTime();
     }]);
 
 })();
