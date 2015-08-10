@@ -40,7 +40,7 @@
                         if( a['order'] > b['order'] ) return 1;
                         return 0;
                     })
-                    console.log(_o.books);
+//                    console.log(_o.books);
                 },
                 addBook:function(url){
 //                    console.log('addBook:'+url);
@@ -61,6 +61,9 @@
                                 _i = 0;
                             for (var i=0,len=_lines.length;i<len;i++) {
                                 var _row=_lines[i];
+                                if (_row.match(/^#/)) {
+                                    continue;
+                                }
                                 if (!_row.match(/^\*/)){
                                      _buf += _row+"\n";
                                      continue;
@@ -79,7 +82,7 @@
                             if (_a>0) {
                                  _questions.push({a: _a, q: _buf});
                             }
-                            console.log(_questions.length);
+//                            console.log(_questions.length);
                             if (_questions.length == 0){
                                 _dfd.reject();
                                 return;
@@ -115,7 +118,7 @@
                      return _dfd.promise;
                 },
                 removeBook:function(index){
-                    console.log('removeBook ' + _o.books[index]['id']);
+//                    console.log('removeBook ' + _o.books[index]['id']);
                     localStorage.removeItem(_o.books[index]['id']);
                 },
                 startQuestion:function(index){
@@ -145,10 +148,10 @@
                 },
                 nextQuestion:function(){
                     _o.questionIndex++;                    
-                    _o.updateBookResult({
-                       total: _o.questionIndex,
-                       correctTotal: _o.correctTotal
-                    });
+//                    _o.updateBookResult({
+//                       total: _o.questionIndex,
+//                       correctTotal: _o.correctTotal
+//                    });
                     
                     if (_o.questionIndex >= _o.questions.length) {
                         return false;
@@ -164,7 +167,7 @@
                 },
                 updateBookResult:function(result){
                     
-                    console.log('updateBookResult:' + JSON.stringify(result));
+//                    console.log('updateBookResult:' + JSON.stringify(result));
                     
                     var _id = _o.nowBook['id'];
                     if (_id && localStorage[_id]) {
@@ -198,13 +201,13 @@
     }])
     .controller('topCtrl',['shared','$http', '$scope',function(shared,$http,$scope){
         
-        console.log('topCtrl');
+//        console.log('topCtrl');
         
         var _this=this;
         shared.loadBooks();
 
         _this.getBooks = function() {
-            console.log('getBooks');
+//            console.log('getBooks');
             return shared.getBooks();    
         },
         _this.onBook = function(i) {
@@ -248,17 +251,26 @@
     }])
     .controller('topMenuDialogCtrl',['shared',function(shared){
         var _this=this;
-        _this.goRecord=function(){
+        _this.goHowto=function(){
             app.topMenuDialog.hide();
-            app.navi.pushPage('record.html');
+            app.navi.pushPage('howto.html');
         };
         _this.goLoadBook=function(){
             app.topMenuDialog.hide();
             app.navi.pushPage('load_book.html');
         };
     }])    
-    .controller('recordCtrl',['shared',function(shared){
+    .controller('howtoCtrl',['shared','$http',function(shared,$http){
         var _this=this;
+        $http.get('qa.txt',{
+            params:{"t":(+new Date())},
+            transformResponse:function(data){return data;}
+        })
+        .then(
+            function(res){      
+                _this.data = res.data;
+            });                    
+        
     }])    
     .controller('loadBookCtrl',['shared','$scope',function(shared,$scope){
         var _this=this;
@@ -354,11 +366,15 @@
     .controller('resultCtrl', ['shared',function(shared){
         var _this=this;
         _this.correctTotal = shared.getCorrectTotal(),
-        _this.total = shared.getQuestionIndex(),
+        _this.total = shared.questions.length,
         _this.goTop = function(){
             app.navi.replacePage('top.html');    
         };
+
+        shared.updateBookResult({
+            'total': _this.total,
+            'correctTotal':_this.correctTotal
+        });            
     }]);
 
 })();
-

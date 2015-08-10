@@ -54,7 +54,7 @@
         </ons-toolbar>    
         <div style="padding:10px">
         <p>
-            <ons-button modifier="large" ng-click="ctrl.goRecord()">成績を見る</ons-button>
+            <ons-button modifier="large" ng-click="ctrl.goHowto()">使い方</ons-button>
         </p>
         <p>
             <ons-button modifier="large" ng-click="ctrl.goLoadBook()">問題を読み込む</ons-button>
@@ -63,29 +63,19 @@
     </ons-dialog>
     </ons-template>
 
-    <ons-template id="record.html">
-    <div style="" ng-controller="recordCtrl as ctrl">
+    <ons-template id="howto.html">
+    <div style="" ng-controller="howtoCtrl as ctrl">
         <ons-toolbar>
             <div class="left"><ons-back-button>Back</ons-back-button></div>    
-            <div class="center">成績を見る</div>
+            <div class="center">使い方</div>
         </ons-toolbar>
-        <ons-list>
-            <ons-list-item ng-init="" ng-repeat="book in [1,2,3,4]">
-            {{book}}
-            </ons-list-item>
-        </ons-list> 
-
-        <ons-list modifier="inset" style="margin-top: 10px">
-        <ons-list-item>
-          Write a comment
-        </ons-list-item>
-        <ons-list-item>
-          Write a comment
-        </ons-list-item>
-        </ons-list>
         <div style="padding:10px">
-        あいうえお<br />
-        かきくけこ
+        問題集テキストファイルをUTF-8で作成し、読取可能なURLに置いてください。<br />
+        「問題を読み込み」でURLを入力し、アプリにデータを読み込みます。
+        </div>
+        <div style="padding:10px">
+        問題集テキストファイルサンプル
+        <textarea class="textarea" rows="10" style="width:100%;" readonly="true">{{ctrl.data}}</textarea>
         </div>
     </div>
     </ons-template>
