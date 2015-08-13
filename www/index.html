@@ -20,7 +20,7 @@
     <ons-template id="top.html">
     <div style="" ng-controller="topCtrl as ctrl">
         <ons-toolbar>
-            <div class="center">QABOOK</div>
+            <div class="center">QBOOK</div>
             <div class="right">
             <ons-toolbar-button ng-click="ctrl.onMenu()">
             <ons-icon icon="ion-navicon" style="font-size: 32px; width: 1em">
@@ -57,11 +57,15 @@
             <ons-button modifier="large" ng-click="ctrl.goHowto()">使い方</ons-button>
         </p>
         <p>
-            <ons-button modifier="large" ng-click="ctrl.goLoadBook()">問題を読み込む</ons-button>
+            <ons-button modifier="large" ng-click="ctrl.goLoadSample()">サンプルを読み込む</ons-button>
+        </p>
+        <p>
+            <ons-button modifier="large" ng-click="ctrl.goLoadUrl()">URLから読み込む</ons-button>
         </p>
         </div>
     </ons-dialog>
     </ons-template>
+
 
     <ons-template id="howto.html">
     <div style="" ng-controller="howtoCtrl as ctrl">
@@ -70,21 +74,38 @@
             <div class="center">使い方</div>
         </ons-toolbar>
         <div style="padding:10px">
-        問題集テキストファイルをUTF-8で作成し、読取可能なURLに置いてください。<br />
-        「問題を読み込み」でURLを入力し、アプリにデータを読み込みます。
+        問題をUTF-8テキストファイルで作成し、読取可能なURLに置いてください。<br />
+        「URLから読み込む」でURLを入力し、アプリに問題を読み込みます。
         </div>
         <div style="padding:10px">
-        問題集テキストファイルサンプル
+        問題テキストファイルサンプル
         <textarea class="textarea" rows="10" style="width:100%;" readonly="true">{{ctrl.data}}</textarea>
         </div>
     </div>
     </ons-template>
-    
-    <ons-template id="load_book.html">
-    <div style="" ng-controller="loadBookCtrl as ctrl">
+
+    <ons-template id="load_sample.html">
+    <div style="" ng-controller="loadSampleCtrl as ctrl">
         <ons-toolbar>
             <div class="left"><ons-back-button>Back</ons-back-button></div>    
-            <div class="center">問題を読み込む</div>
+            <div class="center">サンプルを読み込む</div>
+        </ons-toolbar>
+        <div style="padding:10px">
+        <p>
+            <ons-button modifier="large" ng-click="ctrl.onLoadSample('qa.txt')">サンプル1を読み込む</ons-button>
+        </p>
+        <p>
+            <ons-button modifier="large" ng-click="ctrl.onLoadSample('qa2.txt')">サンプル2を読み込む</ons-button>
+        </p>
+        </div>    
+    </div>
+    </ons-template>
+
+    <ons-template id="load_url.html">
+    <div style="" ng-controller="loadUrlCtrl as ctrl">
+        <ons-toolbar>
+            <div class="left"><ons-back-button>Back</ons-back-button></div>    
+            <div class="center">URLから読み込む</div>
         </ons-toolbar>
         <div style="padding:10px">
         <p>
@@ -94,19 +115,18 @@
         <ons-button modifier="large" style="" ng-click="ctrl.onLoad()">
           読み込む
         </ons-button>
-        </p>
+        </p>        
         <p>
         既に読み込み済みのURLの場合、上書きします。
         </p>
-        </div>    
         </div> 
     </div>
     </ons-template>
-    
+
     <ons-template id="question.html">
     <div style="padding:10px" ng-controller="questionCtrl as ctrl">
         <ons-toolbar>
-            <div class="center">第{{ctrl.index+1}}問</div>
+            <div class="center">{{ctrl.index+1}}/{{ctrl.total}}</div>
             <div class="right">
             <ons-toolbar-button ng-click="ctrl.onExit()">
             <span>終了</span>
@@ -167,9 +187,7 @@
         </ons-toolbar>
         <div>全{{ctrl.total}}問中、{{ctrl.correctTotal}}問正解です。</div>
         <br>
-        <ons-button modifier="large" style="" ng-click="ctrl.goTop()">
-          GO TOP
-        </ons-button>        
+        <ons-button modifier="large" style="" ng-click="ctrl.goTop()">TOPへ戻る</ons-button>        
     </div>
     </ons-template>
 

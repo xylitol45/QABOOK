@@ -105,6 +105,7 @@
                                 'title':_title,
                                 'questions':_questions,
                                 'result':{
+                                    'time':0,
                                     'total':_questions.length,
                                     'correctTotal':0
                                 }
@@ -126,12 +127,14 @@
                     _o.nowBook = angular.copy(_o.books[index]);
                     _o.questions = angular.copy(_o.nowBook['questions']);
                 },
-                getQuestion:function(){
+                getQuestionDetail:function(){
                     if (_o.questions.length == 0 || _o.questionIndex >= _o.questions.length) {
                         return {};
                     }
                     var _que = _o.questions[_o.questionIndex];
                     _que.index = _o.questionIndex;
+                    _que.title = _o.nowBook['title'];
+                    _que.total = _o.questions.length;
                     return _que;
                 },
                 setAnswer:function(answer){
@@ -159,7 +162,6 @@
                     return true;  
                 },
                 getCorrectTotal:function(){
-//console.log(_o);                    
                     return _o.correctTotal;
                 },
                 getQuestionIndex:function(){
@@ -171,7 +173,6 @@
                     
                     var _id = _o.nowBook['id'];
                     if (_id && localStorage[_id]) {
-//console.log("_id:"+_id)                        ;
                         try {
                             var _data = JSON.parse(localStorage[_id]);
                             _data['result'] = result;
@@ -215,9 +216,15 @@
             app.navi.pushPage('question.html');  
         },
         _this.onDeleteBook = function(i,e){
+//console.log(i);
             e.stopPropagation();
+            var _books = shared.getBooks(), 
+                _book = _books[i];
+            if (!_book) {
+                return;
+            }
             ons.notification.confirm({
-                message: 'このコースを削除しますか？',
+                message: _book['title'] + 'を削除しますか？',
                 // もしくは messageHTML: '<div>HTML形式のメッセージ</div>',
                 title: '',
                 buttonLabels: ['はい', 'いいえ'],
@@ -228,7 +235,7 @@
                 // -1: キャンセルされた
                 // 0-: 左から0ではじまるボタン番号
                     if (index == 0) {
-                        shared.removeBook(index);
+                        shared.removeBook(i);
                         shared.loadBooks();
                         $scope.$apply();
                     }
@@ -254,10 +261,14 @@
         _this.goHowto=function(){
             app.topMenuDialog.hide();
             app.navi.pushPage('howto.html');
-        };
-        _this.goLoadBook=function(){
+        },
+        _this.goLoadSample=function(){
             app.topMenuDialog.hide();
-            app.navi.pushPage('load_book.html');
+            app.navi.pushPage('load_sample.html');
+        },
+        _this.goLoadUrl=function(){
+            app.topMenuDialog.hide();
+            app.navi.pushPage('load_url.html');
         };
     }])    
     .controller('howtoCtrl',['shared','$http',function(shared,$http){
@@ -271,12 +282,11 @@
                 _this.data = res.data;
             });                    
         
-    }])    
-    .controller('loadBookCtrl',['shared','$scope',function(shared,$scope){
+    }])
+    .controller('loadSampleCtrl',['shared','$scope',function(shared,$scope){
         var _this=this;
-        _this.url='',
-        _this.onLoad=function(){
-            shared.addBook(_this.url).then(
+        _this.onLoadSample=function(url){
+            shared.addBook(url).then(
                 function(){
                     shared.loadBooks();
                     app.navi.popPage();
@@ -289,16 +299,36 @@
                 }
             );    
         };
+    }])        
+    .controller('loadUrlCtrl',['shared','$scope',function(shared,$scope){
+        var _this=this;
+        _this.url='',
+        _this.onLoad=function(){
+            shared.addBook(_this.url).then(
+                function(){
+                    shared.loadBooks();
+                    app.navi.popPage();
+                },
+                function(){
+                    ons.notification.alert({
+                        title:'', message: '読み込みに失敗しました',
+                    });
+                }
+            );    
+        };
     }])    
     .controller('questionCtrl',['shared','$http', function(shared,$http){
         var _this=this;
         _this.q = "",
-        _this.que = {},        
+        _this.title='',
+        _this.total=0,
         _this.choices = shared.choices,
         _this.displayQuestion=function(){
-            var _que = shared.getQuestion();
+            var _que = shared.getQuestionDetail();
             if (_que) {
                 _this.index = _que.index;
+                _this.total = _que.total;
+                _this.title = _que.title;
                 _this.q = (_que.q || '').replace(/\n/g,'<br>');
             }
         },
@@ -327,7 +357,7 @@
         },
         _this.onExit = function(){
             ons.notification.confirm({
-                message: 'このコースを終了してもいいですか？',
+                message: '終了してもよろしいですか？',
                 // もしくは messageHTML: '<div>HTML形式のメッセージ</div>',
                 title: '',
                 buttonLabels: ['はい', 'いいえ'],
@@ -349,7 +379,6 @@
                 dialog.show();
             });
         };
-        
         _this.displayQuestion();        
     }])
     .controller('answerDialogCtrl',['shared',function(shared){
@@ -372,6 +401,7 @@
         };
 
         shared.updateBookResult({
+            'time' : (+ new Date()),
             'total': _this.total,
             'correctTotal':_this.correctTotal
         });            
